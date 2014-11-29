@@ -8,7 +8,7 @@ This file is part of the GSM3 communications library for Arduino
 -- TCP/IP connections
 -- HTTP basic clients
 
-This library has been developed by Telefónica Digital - PDI -
+This library has been developed by TelefÃ³nica Digital - PDI -
 - Physical Internet Lab, as part as its collaboration with
 Arduino and the Open Hardware Community. 
 
@@ -63,7 +63,7 @@ String GSM3ShieldV1ScanNetworks::getCurrentCarrier()
 		String final_result = ptr_token;
 		return final_result;
 	}else{
-		return NULL;
+		return "";
 	}
 }
 
@@ -82,7 +82,7 @@ String GSM3ShieldV1ScanNetworks::getSignalStrength()
 		final_result.trim();
 		return final_result;
 	}else{
-		return NULL;
+		return "";
 	}
 }
 
