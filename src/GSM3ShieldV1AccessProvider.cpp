@@ -141,9 +141,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 	bool resp;
 
 	// 1: Send AT
-	// 2: Wait AT OK and SetPin or CGREG
-	// 3: Wait Pin OK and CGREG
-	// 4: Wait CGREG and Flow SW control or CGREG
+	// 2: Wait AT OK and SetPin or CREG
+	// 3: Wait Pin OK and CREG
+	// 4: Wait CGREG and Flow SW control or CREG
 	// 5: Wait IFC OK and SMS Text Mode
 	// 6: Wait SMS text Mode OK and Calling line identification
 	// 7: Wait Calling Line Id OK and Echo off
