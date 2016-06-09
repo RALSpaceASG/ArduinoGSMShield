@@ -40,6 +40,7 @@ https://github.com/BlueVia/Official-Arduino
 #define __TOUTAT__ 1000
 
 const char _command_AT[] PROGMEM = "AT";
+const char _command_CREG[] PROGMEM = "AT+CREG?";
 const char _command_CGREG[] PROGMEM = "AT+CGREG?";
 
 
@@ -175,7 +176,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 						//Serial.println("AT+CGREG?");	
 						theGSM3ShieldV1ModemCore.setCommandCounter(4);
 						theGSM3ShieldV1ModemCore.takeMilliseconds();
-						theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CGREG);
+						theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CREG);
 					}
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -190,7 +191,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 				theGSM3ShieldV1ModemCore.setCommandCounter(4);
 				theGSM3ShieldV1ModemCore.takeMilliseconds();
 				theGSM3ShieldV1ModemCore.delayInsideInterrupt(2000);
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CGREG);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CREG);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 	    }
@@ -218,7 +219,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 				else 
 				{
 					theGSM3ShieldV1ModemCore.delayInsideInterrupt(2000);
-					theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CGREG);
+					theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CREG);
 				}
 			}
 		}	
