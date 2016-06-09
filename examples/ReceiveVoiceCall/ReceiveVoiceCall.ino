@@ -1,97 +1,98 @@
 /*
  Receive Voice Call
- 
- This sketch, for the Arduino GSM shield, receives voice calls, 
- displays the calling number, waits a few seconds and gently hangs,
- 
+
+ This sketch, for the Arduino GSM shield, receives voice calls,
+ displays the calling number, waits a few seconds then hangs up.
+
  Circuit:
- * GSM shield 
- * Voice circuit. 
- With no voice circuit the call will send nor receive any sound
-  
+ * GSM shield
+ * Voice circuit. Refer to to the GSM shield getting started guide
+   at http://www.arduino.cc/en/Guide/ArduinoGSMShield#toc11
+ * SIM card that can accept voice calls
+
+ With no voice circuit the call will connect, but will not send or receive sound
+
  created Mar 2012
  by Javier Zorzano
- 
+
  This example is in the public domain.
+
+ http://www.arduino.cc/en/Tutorial/GSMExamplesReceiveVoiceCall
+
  */
 
-// libraries
+// Include the GSM library
 #include <GSM.h>
 
 // PIN Number
 #define PINNUMBER ""
 
 // initialize the library instance
-GSM gsmAccess; // include a 'true' parameter for debug enabled
+GSM gsmAccess;
 GSMVoiceCall vcs;
 
+// Array to hold the number for the incoming call
+char numtel[20];
 
-char numtel[20];           // buffer for the incoming call
-
-void setup()
-{
-  // initialize serial communications
+void setup() {
+  // initialize serial communications and wait for port to open:
   Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+
   Serial.println("Receive Voice Call");
-  
+
   // connection state
   boolean notConnected = true;
-  
+
   // Start GSM shield
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
-  while(notConnected)
-  {
-    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
+  while (notConnected) {
+    if (gsmAccess.begin(PINNUMBER) == GSM_READY) {
       notConnected = false;
-    else
-    {
+    } else {
       Serial.println("Not connected");
       delay(1000);
     }
   }
-  
-  // This makes sure the modem notifies correctly incoming events
+
+  // This makes sure the modem correctly reports incoming events
   vcs.hangCall();
-  
-  Serial.println("Waiting Call");
+
+  Serial.println("Waiting for a call");
 }
 
-void loop()
-{
+void loop() {
   // Check the status of the voice call
-  switch (vcs.getvoiceCallStatus()) 
-  {
+  switch (vcs.getvoiceCallStatus()) {
     case IDLE_CALL: // Nothing is happening
-      
+
       break;
-      
-    case CALLING: // This should never happen, as we are not placing a call
-      
-      Serial.println("CALLING");
-      break;
-      
+
     case RECEIVINGCALL: // Yes! Someone is calling us
-      
+
       Serial.println("RECEIVING CALL");
-      
+
       // Retrieve the calling number
       vcs.retrieveCallingNumber(numtel, 20);
-      
+
       // Print the calling number
       Serial.print("Number:");
       Serial.println(numtel);
-      
+
       // Answer the call, establish the call
-      vcs.answerCall();         
+      vcs.answerCall();
       break;
-      
+
     case TALKING:  // In this case the call would be established
-      
-      Serial.println("TALKING. Enter line to interrupt.");
-      while(Serial.read()!='\n')
+
+      Serial.println("TALKING. Press enter to hang up.");
+      while (Serial.read() != '\n') {
         delay(100);
+      }
       vcs.hangCall();
-      Serial.println("HANG. Waiting Call.");      
+      Serial.println("Hanging up and waiting for the next call.");
       break;
   }
   delay(1000);

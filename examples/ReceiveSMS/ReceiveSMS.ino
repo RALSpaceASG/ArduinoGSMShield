@@ -1,85 +1,87 @@
 /*
-SMS receiver
- 
- This sketch, for the Arduino GSM shield, waits for SMS messages 
- and displays them through the Serial port. 
- 
+ SMS receiver
+
+ This sketch, for the Arduino GSM shield, waits for a SMS message
+ and displays it through the Serial port.
+
  Circuit:
- * GSM shield 
- 
+ * GSM shield attached to and Arduino
+ * SIM card that can receive SMS messages
+
  created 25 Feb 2012
  by Javier Zorzano / TD
- 
+
  This example is in the public domain.
+
+ http://www.arduino.cc/en/Tutorial/GSMExamplesReceiveSMS
+
 */
 
-// libraries
+// include the GSM library
 #include <GSM.h>
 
-// PIN Number
+// PIN Number for the SIM
 #define PINNUMBER ""
 
-// initialize the library instance
-GSM gsmAccess; // include a 'true' parameter for debug enabled
+// initialize the library instances
+GSM gsmAccess;
 GSM_SMS sms;
 
-char remoteNumber[20];  // Holds the emitting number
+// Array to hold the number a SMS is retreived from
+char senderNumber[20];
 
-void setup() 
-{
-  // initialize serial communications
-  Serial.begin(9600); 
+void setup() {
+  // initialize serial communications and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
 
   Serial.println("SMS Messages Receiver");
-    
+
   // connection state
   boolean notConnected = true;
-  
-  // Start GSM shield
-  // If your SIM has PIN, pass it as a parameter of begin() in quotes
-  while(notConnected)
-  {
-    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
+
+  // Start GSM connection
+  while (notConnected) {
+    if (gsmAccess.begin(PINNUMBER) == GSM_READY) {
       notConnected = false;
-    else
-    {
+    } else {
       Serial.println("Not connected");
       delay(1000);
     }
   }
-  
+
   Serial.println("GSM initialized");
   Serial.println("Waiting for messages");
 }
 
-void loop() 
-{
+void loop() {
   char c;
-  
-  // If there are any SMSs available()  
-  if (sms.available())
-  {
-    Serial.println("Message received from:");
-    
-    // Get remote number
-    sms.remoteNumber(remoteNumber, 20);
-    Serial.println(remoteNumber);
 
-    // This is just an example of message disposal    
-    // Messages starting with # should be discarded
-    if(sms.peek()=='#')
-    {
+  // If there are any SMSs available()
+  if (sms.available()) {
+    Serial.println("Message received from:");
+
+    // Get remote number
+    sms.remoteNumber(senderNumber, 20);
+    Serial.println(senderNumber);
+
+    // An example of message disposal
+    // Any messages starting with # should be discarded
+    if (sms.peek() == '#') {
       Serial.println("Discarded SMS");
       sms.flush();
     }
-    
+
     // Read message bytes and print them
-    while(c=sms.read())
+    while (c = sms.read()) {
       Serial.print(c);
-      
+    }
+
     Serial.println("\nEND OF MESSAGE");
-    
-    // delete message from modem memory
+
+    // Delete message from modem memory
     sms.flush();
     Serial.println("MESSAGE DELETED");
   }

@@ -1,24 +1,24 @@
 /*
  Band Management
- 
+
  This sketch, for the Arduino GSM shield, checks the band
- currently configured in the modem and allows you to change 
+ currently configured in the modem and allows you to change
  it.
- 
+
  Please check http://www.worldtimezone.com/gsm.html
  Usual configurations:
  Europe, Africa, Middle East: E-GSM(900)+DCS(1800)
  USA, Canada, South America: GSM(850)+PCS(1900)
  Mexico: PCS(1900)
  Brazil: GSM(850)+E-GSM(900)+DCS(1800)+PCS(1900)
- 
- 
+
+
  Circuit:
- * GSM shield 
- 
+ * GSM shield
+
  created 12 June 2012
- by Javier Zorzano
- 
+ by Javier Zorzano, Scott Fitzgerald
+
  This example is in the public domain.
  */
 
@@ -26,116 +26,90 @@
 #include <GSM.h>
 
 // initialize the library instance
-GSMBand bandManager;
+GSMBand band;
 
-void setup()
-{
-  // initialize serial communications
+void setup() {
+  // initialize serial communications and wait for port to open:
   Serial.begin(9600);
-  
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+
   // Beginning the band manager restarts the modem
   Serial.println("Restarting modem...");
-  bandManager.begin();
+  band.begin();
   Serial.println("Modem restarted.");
-  
+
 };
 
 
-void loop()
-{
-  // Get current band  
-  GSM3GSMBand band;
+void loop() {
+  // Get current band
+  String bandName = band.getBand(); // Get and print band name
+  Serial.print("Current band:");
+  Serial.println(bandName);
+  Serial.println("Want to change the band you’re on?");
+  String newBandName;
+  newBandName = askUser();
+  // Tell the user what we are about to do…
+  Serial.print("\nConfiguring band ");
+  Serial.println(newBandName);
+  // Change the band
+  boolean operationSuccess;
+  operationSuccess = band.setBand(newBandName);
+  // Tell the user if the operation was OK
+  if (operationSuccess) {
+    Serial.println("Success");
+  } else {
+    Serial.println("Error while changing band");
+  }
 
-  band=bandManager.getBand();
-
-  // Get and print bands printable name
-  Serial.print("Current band: ");
-  Serial.println(bandManager.getBandName(band));
-  
-  // If we have no clue on the band value, stop there.
-  if(band==UNDEFINED)
-    while(true);
-  
-  // Ask user for new band to configure
-  GSM3GSMBand newBand;
-  newBand=askUserBand();
-
-  // Send command to modem to change band
-  if(newBand!=UNDEFINED)
-  {
-    String command;
-    // Tell the user what we are about to do...
-    Serial.print("\nConfiguring band ");
-    Serial.println(bandManager.getBandName(newBand));
-    
-    // Change the band
-    bool operationSuccess;
-    operationSuccess=bandManager.setBand(newBand);    
-    
-    // Tell the user if the operation was OK
-    if(operationSuccess)
-      Serial.println("Success");
-    else
-      Serial.println("Error while changing band");
+  if (operationSuccess) {
+    while (true);
   }
 }
 
 // This function offers the user different options
 // through the Serial interface
 // The user selects one
-GSM3GSMBand askUserBand()
-{
-  GSM3GSMBand result;
+String askUser() {
+  String newBand;
   Serial.println("Select band:");
-
   // Print the different options
-  Serial.print("1 ");
-  Serial.println(bandManager.getBandName(EGSM_MODE));
-  Serial.print("2 ");
-  Serial.println(bandManager.getBandName(DCS_MODE));
-  Serial.print("3 ");
-  Serial.println(bandManager.getBandName(PCS_MODE));
-  Serial.print("4 ");
-  Serial.println(bandManager.getBandName(EGSM_DCS_MODE));
-  Serial.print("5 ");
-  Serial.println(bandManager.getBandName(GSM850_PCS_MODE));
-  Serial.print("6 ");
-  Serial.println(bandManager.getBandName(GSM850_EGSM_DCS_PCS_MODE));
+  Serial.println("1 : E-GSM(900)");
+  Serial.println("2 : DCS(1800)");
+  Serial.println("3 : PCS(1900)");
+  Serial.println("4 : E-GSM(900)+DCS(1800) ex: Europe");
+  Serial.println("5 : GSM(850)+PCS(1900) Ex: USA, South Am.");
+  Serial.println("6 : GSM(850)+E-GSM(900)+DCS(1800)+PCS(1900)");
 
   // Empty the incoming buffer
-  while(Serial.available())
+  while (Serial.available()) {
     Serial.read();
-  // Wait for an answer, just look at the first character
-  while(!Serial.available());
-  char c= Serial.read();
-  
-  // Now, according to input, select result
-  // If the user has not selected something between 1-6
-  // result in UNDEFINED
+  }
 
-  switch(c)
-  {
-      case '1':
-        result=EGSM_MODE;
-        break;
-      case '2':
-        result=DCS_MODE;
-        break;
-      case '3':
-        result=PCS_MODE;
-        break;
-      case '4':
-        result=EGSM_DCS_MODE;
-        break;
-      case '5':
-        result=GSM850_PCS_MODE;
-        break;
-      case '6':
-        result=GSM850_EGSM_DCS_PCS_MODE;
-        break;
-      default:
-        result=UNDEFINED;
-  };
-    
-  return result;
+  // Wait for an answer, just look at the first character
+  while (!Serial.available());
+  char c = Serial.read();
+  if (c == '1') {
+    newBand = GSM_MODE_EGSM;
+  } else if (c == '2') {
+    newBand = GSM_MODE_DCS;
+  } else if (c == '3') {
+    newBand = GSM_MODE_PCS;
+  } else if (c == '4') {
+    newBand = GSM_MODE_EGSM_DCS;
+  } else if (c == '5') {
+    newBand = GSM_MODE_GSM850_PCS;
+  } else if (c == '6') {
+    newBand = GSM_MODE_GSM850_EGSM_DCS_PCS;
+  } else {
+    newBand = "GSM_MODE_UNDEFINED";
+  }
+  return newBand;
 }
+
+
+
+
+
