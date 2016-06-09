@@ -200,8 +200,8 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 	{
 		char auxLocate1 [12];
 		char auxLocate2 [12];
-		prepareAuxLocate(PSTR("+CGREG: 0,1"), auxLocate1);
-		prepareAuxLocate(PSTR("+CGREG: 0,5"), auxLocate2);
+		prepareAuxLocate(PSTR("+CREG: 0,1"), auxLocate1);
+		prepareAuxLocate(PSTR("+CREG: 0,5"), auxLocate2);
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp, auxLocate1, auxLocate2))
 		{
 			if(resp)
