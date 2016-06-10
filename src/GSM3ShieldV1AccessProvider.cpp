@@ -60,6 +60,9 @@ void GSM3ShieldV1AccessProvider::manageResponse(byte from, byte to)
 		case ALIVETEST:
 			isModemAliveContinue();
 			break;
+		case GSMTEST:
+			isGSMConnectedContinue();
+			break;
 	}
 }
 
