@@ -308,8 +308,16 @@ switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 2:
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp, auxLocate1, auxLocate2))
 		{
-			if(resp) theGSM3ShieldV1ModemCore.closeCommand(1);
-			else theGSM3ShieldV1ModemCore.closeCommand(3);
+			if(resp)
+			{
+				theGSM3ShieldV1ModemCore.setStatus(GSM_READY);
+				theGSM3ShieldV1ModemCore.closeCommand(1);
+			}
+			else
+			{
+				theGSM3ShieldV1ModemCore.setStatus(CONNECTING);
+				theGSM3ShieldV1ModemCore.closeCommand(3);
+			}
 		}
 	}
 }
