@@ -55,6 +55,10 @@ class GSM3ShieldV1AccessProvider : public GSM3MobileAccessProvider, public GSM3S
 		/** Continue to check if modem alive function
 		 */
 		void isModemAliveContinue();
+
+		/** Continue to check GSM connection function
+		 */
+		void isGSMConnectedContinue();
 		
 
 	public:
@@ -83,6 +87,11 @@ class GSM3ShieldV1AccessProvider : public GSM3MobileAccessProvider, public GSM3S
 			@return 1 if Alive, 0 if down
 		*/
 		int isAccessAlive();
+
+		/** Check GSM network connection status
+			@return 1 if Alive, 0 if down
+		*/
+		int isGSMConnected();
 		
 		/** Shutdown the modem (power off really)
 			@return true if successful
